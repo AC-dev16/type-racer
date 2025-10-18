@@ -17,13 +17,40 @@
                     <a class="navbar-brand d-block mb-2 text-white" href="#" aria-label="TypeRacer home">
                         <span class="fs-2">TypeRacer</span>
                     </a>
-                    <button id="instructionsBtn" type="button" class="btn text-dark" style="background-color: #f8f9fa;">
+                    <button id="instructionsBtn" type="button" class="btn text-dark" style="background-color: #f8f9fa;" data-bs-toggle="modal" data-bs-target="#instructionsModal">
                         Instructions
                     </button>
                 </div>
             </div>
         </nav>
     </header>
+
+    <!-- Instructions Modal -->
+    <div class="modal fade" id="instructionsModal" tabindex="-1" aria-labelledby="instructionsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="instructionsModalLabel">Instructions</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Welcome to the TypeRacer typing test!</p>
+                    <p>Here's how it works:</p>
+                    <ol>
+                        <li>Choose a difficulty level from the dropdown menu.</li>
+                        <li>The test will start as soon as you begin typing.</li>
+                        <li>Press the "Enter" key to stop the test.</li>
+                        <li>Your results will be displayed in the Results area.</li>
+                        <li>You can retry the test by clicking the "Retry" button.</li>
+                    </ol>
+                    <p>Good luck and have fun!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <main class="container my-4">
         <div class="row g-4">
@@ -56,19 +83,12 @@
                                 id="typingInput" 
                                 class="form-control bg-white border-secondary" 
                                 rows="4" 
-                                placeholder="Click the start button to begin the test"
-                                disabled
+                                placeholder="Start typing to begin the test... Press Enter to finish."
                             ></textarea>
                         </div>
 
                         <!-- Control Buttons -->
                         <div class="d-flex gap-2 flex-wrap justify-content-center">
-                            <button id="startBtn" class="btn" style="background-color: white; border: 2px solid #ff8400; color: black;">
-                                Start
-                            </button>
-                            <button id="stopBtn" class="btn" style="background-color: white; border: 2px solid #ff8400; color: black;">
-                                Stop
-                            </button>
                             <button id="retryBtn" class="btn" style="background-color: white; border: 2px solid #ff8400; color: black;">
                                 Retry
                             </button>

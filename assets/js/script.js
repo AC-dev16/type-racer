@@ -24,6 +24,8 @@ let currentText = '';
 // Timer variables
 let startTime = null;
 let endTime = null;
+let testStarted = false;
+let testCompleted = false;
 
 // Function to get random text based on difficulty
 function getRandomText(difficulty) {
@@ -35,6 +37,7 @@ function getRandomText(difficulty) {
 // Function to start the timer
 function startTimer() {
     startTime = new Date().getTime();
+    testStarted = true;
     console.log('Timer started at:', startTime);
 }
 
@@ -133,16 +136,49 @@ function highlightWords(userText, sampleText) {
     sampleTextElement.innerHTML = highlightedHTML;
 }
 
-// Function to handle real-time typing feedback
+// Function to handle real-time typing feedback and auto-start
 function handleTypingInput() {
     const userText = document.getElementById('typingInput').value;
+    
+    // Auto-start the test when user begins typing
+    if (!testStarted && userText.length > 0) {
+        startTimer();
+        console.log('Test auto-started');
+    }
+    
     highlightWords(userText, currentText);
+}
+
+// Function to handle key press events (for Enter key detection)
+function handleKeyPress(event) {
+    const typingInput = document.getElementById('typingInput');
+    const retryBtn = document.getElementById('retryBtn');
+    
+    // Check if Enter key is pressed and test is active
+    if (event.key === 'Enter' && testStarted && !testCompleted) {
+        event.preventDefault(); // Prevent new line in textarea
+        
+        // Stop the test
+        testCompleted = true;
+        typingInput.disabled = true;
+        
+        // Re-enable retry button when test is completed
+        retryBtn.disabled = false;
+        
+        // Stop the timer and calculate WPM
+        stopTimer();
+        calculateAndDisplayWPM();
+        
+        console.log('Test stopped by Enter key');
+    }
 }
 
 // Function to reset timer variables
 function resetTimer() {
     startTime = null;
     endTime = null;
+    testStarted = false;
+    testCompleted = false;
 }
 
 // Function to update the sample text display
@@ -161,44 +197,31 @@ function updateSampleText() {
 function handleDifficultyChange(selectedDifficulty) {
     currentDifficulty = selectedDifficulty;
     updateSampleText();
-}
-
-// Named function to handle start button click
-function handleStartButtonClick(startBtn, stopBtn, typingInput) {
-    // Enable typing input and start test
+    
+    // Reset test state when difficulty changes
+    resetTimer();
+    const typingInput = document.getElementById('typingInput');
+    const retryBtn = document.getElementById('retryBtn');
     typingInput.disabled = false;
-    typingInput.focus();
-    startBtn.disabled = true;
-    stopBtn.disabled = false;
     
-    // Start the timer
-    startTimer();
+    // Disable retry button when difficulty changes to prevent immediate retry
+    retryBtn.disabled = true;
     
-    console.log('Test started with difficulty:', currentDifficulty);
-}
-
-// Named function to handle stop button click
-function handleStopButtonClick(startBtn, stopBtn, typingInput) {
-    // Disable typing input and stop test
-    typingInput.disabled = true;
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
-    
-    // Stop the timer and calculate WPM
-    stopTimer();
-    calculateAndDisplayWPM();
-    
-    console.log('Test stopped');
+    // Reset results
+    document.getElementById('timeResult').textContent = '0';
+    document.getElementById('wpmResult').textContent = '0';
 }
 
 // Named function to handle retry button click
-function handleRetryButtonClick(startBtn, stopBtn, typingInput) {
+function handleRetryButtonClick(typingInput, retryBtn) {
     // Reset the test
     updateSampleText();
-    typingInput.disabled = true;
+    typingInput.disabled = false;
     typingInput.value = '';
-    startBtn.disabled = false;
-    stopBtn.disabled = true;
+    typingInput.focus();
+    
+    // Disable retry button after clicking it
+    retryBtn.disabled = true;
     
     // Reset timer and results
     resetTimer();
@@ -221,23 +244,19 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     
     // Add event listeners for control buttons
-    const startBtn = document.getElementById('startBtn');
-    const stopBtn = document.getElementById('stopBtn');
     const retryBtn = document.getElementById('retryBtn');
     const typingInput = document.getElementById('typingInput');
     
-    startBtn.addEventListener('click', function() {
-        handleStartButtonClick(startBtn, stopBtn, typingInput);
-    });
-    
-    stopBtn.addEventListener('click', function() {
-        handleStopButtonClick(startBtn, stopBtn, typingInput);
-    });
-    
     retryBtn.addEventListener('click', function() {
-        handleRetryButtonClick(startBtn, stopBtn, typingInput);
+        handleRetryButtonClick(typingInput, retryBtn);
     });
     
-    // Add real-time typing feedback
+    // Add real-time typing feedback and auto-start functionality
     typingInput.addEventListener('input', handleTypingInput);
+    
+    // Add Enter key detection for stopping the test
+    typingInput.addEventListener('keydown', handleKeyPress);
+    
+    // Focus on the typing input initially
+    typingInput.focus();
 });
