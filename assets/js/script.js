@@ -99,6 +99,46 @@ function calculateAndDisplayWPM() {
     console.log('Final WPM:', wpm);
 }
 
+// Function to highlight words based on typing accuracy
+function highlightWords(userText, sampleText) {
+    const userWords = userText.trim().split(/\s+/);
+    const sampleWords = sampleText.split(/\s+/);
+    const sampleTextElement = document.getElementById('sampleText');
+    
+    let highlightedHTML = '';
+    
+    for (let i = 0; i < sampleWords.length; i++) {
+        const sampleWord = sampleWords[i];
+        
+        if (i < userWords.length) {
+            // User has typed this word position
+            if (userWords[i] === sampleWord) {
+                // Correct word - highlight in blue
+                highlightedHTML += `<span style="color: blue; font-weight: bold;">${sampleWord}</span>`;
+            } else {
+                // Incorrect word - highlight in red
+                highlightedHTML += `<span style="color: red; font-weight: bold;">${sampleWord}</span>`;
+            }
+        } else {
+            // User hasn't reached this word yet - keep default styling
+            highlightedHTML += `<span>${sampleWord}</span>`;
+        }
+        
+        // Add space after each word except the last one
+        if (i < sampleWords.length - 1) {
+            highlightedHTML += ' ';
+        }
+    }
+    
+    sampleTextElement.innerHTML = highlightedHTML;
+}
+
+// Function to handle real-time typing feedback
+function handleTypingInput() {
+    const userText = document.getElementById('typingInput').value;
+    highlightWords(userText, currentText);
+}
+
 // Function to reset timer variables
 function resetTimer() {
     startTime = null;
@@ -197,4 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
     retryBtn.addEventListener('click', function() {
         handleRetryButtonClick(startBtn, stopBtn, typingInput);
     });
+    
+    // Add real-time typing feedback
+    typingInput.addEventListener('input', handleTypingInput);
 });
